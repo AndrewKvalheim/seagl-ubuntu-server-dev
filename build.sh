@@ -67,6 +67,7 @@ EOF
 systemctl --root=$mnt enable ssh-hostkey-generate.service
 
 buildah config --author='AJ Jordan' --arch=amd64 --cmd=/bin/systemd --created-by='https://github.com/SeaGL/ubuntu-server-dev' $newcontainer
+buildah config --label org.opencontainers.image.source=https://github.com/SeaGL/ubuntu-server-dev --label org.opencontainers.image.description='Ubuntu Server cloud rootfs in a container, for development environments ONLY' --label org.opencontainers.image.version=$version --label org.opencontainers.image.created="$(date --rfc-3339 seconds)" $newcontainer
 
 buildah commit --rm $newcontainer $imgname
 buildah tag $imgname $imgname:$version $imgname:$codename
