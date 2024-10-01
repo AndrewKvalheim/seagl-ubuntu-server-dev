@@ -12,6 +12,11 @@ on:
 jobs:
   build_push_images:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # curl https://api.launchpad.net/devel/ubuntu/series | jq '.entries[] | select(.supported == true and .active == true) | .version' | tr '\n' ' ' | sed -e 's/^/[/' -e 's/ $/]/' -e 's/ /, /g'
+        # The above command actually grabs Ubuntu ESM-supported releases too, but the Launchpad API doesn't give a way to differentiate these out so who cares
+        version: ["24.04", "22.04", "20.04", "18.04", "16.04", "14.04"]
     env:
       REGISTRY_USER: ${{ github.actor }}
       REGISTRY_PASSWORD: ${{ github.token }}
@@ -30,4 +35,4 @@ jobs:
 
       - name: Build and push container images
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: ./build-and-push.sh 24.04
+        run: ./build-and-push.sh ${{ matrix.version }}
