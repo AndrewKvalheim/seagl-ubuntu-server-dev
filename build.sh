@@ -33,7 +33,7 @@ mnt=$(buildah mount $newcontainer)
 tar --numeric-owner --preserve-permissions --same-owner --acls --selinux --xattrs -C $mnt -xvf $filename
 
 # Disable TPM-related units, which fail at runtime in the container environment
-chroot $mnt systemctl disable tpm-udev.path
+systemctl --root=$mnt disable tpm-udev.path
 
 # Slice rootfs config out of fstab, since LABEL=cloudimg-rootfs doesn't exist in the container environment and systemd-remount-fs.service complains about not being able to find it
 chroot $mnt sed -i '/LABEL=cloudimg-rootfs/d' /etc/fstab
@@ -59,7 +59,7 @@ ExecStart=dpkg-reconfigure openssh-server
 [Install]
 WantedBy=ssh.service
 EOF
-chroot $mnt systemctl enable ssh-hostkey-generate.service
+systemctl --root=$mnt enable ssh-hostkey-generate.service
 
 buildah config --author='AJ Jordan' --arch=amd64 --cmd=/bin/systemd --created-by='https://github.com/SeaGL/ubuntu-server-dev' $newcontainer
 
