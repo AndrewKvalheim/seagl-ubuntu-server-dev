@@ -59,7 +59,7 @@ ConditionPathExists=!/etc/ssh/ssh_host_rsa_key
 
 [Service]
 Type=oneshot
-ExecStart=dpkg-reconfigure openssh-server
+ExecStart=dpkg-reconfigure --default-priority --frontend=noninteractive openssh-server
 
 [Install]
 WantedBy=ssh.service
