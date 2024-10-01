@@ -18,7 +18,7 @@ if ! [ $(id -u) = 0 ]; then
 	# https://github.com/containers/buildah/issues/1657#issuecomment-504737328
 	echo 'Reexecuting under root...'
 	sudo "$0" "$@"
-	echo 'Tranferring to unprivileged user...'
+	echo 'Transferring to unprivileged user...'
 	sudo podman save localhost/$imgname | podman load
 	echo 'Cleaning up root user image...'
 	sudo podman rmi localhost/$imgname
