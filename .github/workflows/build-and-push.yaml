@@ -1,0 +1,36 @@
+name: Build container images
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '20 3 * * 0' # Basically picked at random to try and be a low-load time for GitHub Actions
+  workflow_dispatch:
+
+jobs:
+  login:
+    name: Log in to GitHub Container Registry
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_USER: ${{ github.actor }}
+      REGISTRY_PASSWORD: ${{ github.token }}
+      IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+    steps:
+      - name: Log in to ghcr.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+  build_push_images:
+    name: Build and push container images
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repo
+      uses: actions/checkout@v1
+
+    - name: Build and push container images
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: ./build-and-push.sh 24.04
