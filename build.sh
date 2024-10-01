@@ -45,6 +45,22 @@ cat > $mnt/etc/systemd/system/systemd-networkd-wait-online.service.d/override.co
 TimeoutSec=10s
 EOF
 
+# Generate SSH keys on first boot
+cat > $mnt/etc/systemd/system/ssh-hostkey-generate.service <<EOF
+[Unit]
+Description=Generate SSH keys on first container boot
+Before=ssh.service
+ConditionPathExists=!/etc/ssh/ssh_host_rsa_key
+
+[Service]
+Type=oneshot
+ExecStart=dpkg-reconfigure openssh-server
+
+[Install]
+WantedBy=ssh.service
+EOF
+chroot $mnt systemctl enable ssh-hostkey-generate.service
+
 buildah config --author='AJ Jordan' --arch=amd64 --cmd=/bin/systemd --created-by='https://github.com/SeaGL/ubuntu-server-dev' $newcontainer
 
 buildah commit --rm $newcontainer $imgname
