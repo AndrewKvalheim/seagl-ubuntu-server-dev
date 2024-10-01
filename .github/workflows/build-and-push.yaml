@@ -25,7 +25,7 @@ jobs:
     needs: get-ubuntu-versions
     strategy:
       matrix:
-        version: ${{ fromJSON(needs.get-ubuntu-versions.outputs.versions }}
+        version: ${{ fromJSON(needs.get-ubuntu-versions.outputs.versions) }}
     env:
       REGISTRY_USER: ${{ github.actor }}
       REGISTRY_PASSWORD: ${{ github.token }}
