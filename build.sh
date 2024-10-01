@@ -4,13 +4,18 @@ set -euo pipefail
 
 trap 'echo failed' ERR
 
+# TODO validate args and print help text
+
+version=$1
 imgname=ubuntu-server-dev
+codename=$(curl https://api.launchpad.net/devel/ubuntu/series | jq -r '.entries[] | select(.version == "'$version'") | .name')
+
+echo "Building Ubuntu Server dev image for $version $codename..."
 
 # TODO verify this file
-# TODO parameterize this by Ubuntu version, and tag appropriately
 # TODO deal with checking for updates to this file, somehow
-filename=ubuntu-24.04-server-cloudimg-amd64-root.tar.xz
-wget --no-clobber https://cloud-images.ubuntu.com/releases/24.04/release/$filename
+filename=ubuntu-$version-server-cloudimg-amd64-root.tar.xz
+wget --no-clobber https://cloud-images.ubuntu.com/releases/$version/release/$filename
 
 if ! [ $(id -u) = 0 ]; then
 	# Need to be actual root to `mknod` things in /dev.
@@ -19,9 +24,9 @@ if ! [ $(id -u) = 0 ]; then
 	echo 'Reexecuting under root...'
 	sudo "$0" "$@"
 	echo 'Transferring to unprivileged user...'
-	sudo podman save localhost/$imgname | podman load
+	sudo podman save $imgname:{$codename,$version} | podman load
 	echo 'Cleaning up root user image...'
-	sudo podman rmi localhost/$imgname
+	sudo podman rmi $imgname:{latest,$codename,$version}
 	exit 0
 fi
 
@@ -64,3 +69,4 @@ systemctl --root=$mnt enable ssh-hostkey-generate.service
 buildah config --author='AJ Jordan' --arch=amd64 --cmd=/bin/systemd --created-by='https://github.com/SeaGL/ubuntu-server-dev' $newcontainer
 
 buildah commit --rm $newcontainer $imgname
+buildah tag $imgname $imgname:$version $imgname:$codename
