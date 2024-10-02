@@ -53,13 +53,14 @@ EOF
 # Generate SSH keys on first boot
 cat > $mnt/etc/systemd/system/ssh-hostkey-generate.service <<EOF
 [Unit]
-Description=Generate SSH keys on first container boot
+Description=Properly configure OpenSSH keys on first container boot
 Before=ssh.service
 ConditionPathExists=!/etc/ssh/ssh_host_rsa_key
 
 [Service]
 Type=oneshot
-ExecStart=dpkg-reconfigure --default-priority --frontend=noninteractive openssh-server
+Environment=DEBIAN_FRONTEND=noninteractive
+ExecStart=apt-get install --reinstall -qq -y openssh-server
 
 [Install]
 WantedBy=ssh.service
