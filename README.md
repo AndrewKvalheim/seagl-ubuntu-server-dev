@@ -28,7 +28,7 @@ $ docker exec -it $id bash # You now are root inside a fully running Ubuntu Serv
 
 ## Building
 
-You will need `buildah` and `podman`. You will also need to have `sudo` rights.
+You will need `buildah`, `podman`, `wget` and `curl`. You will also need to have `sudo` rights.
 
 Then, run `./build.sh`.
 
