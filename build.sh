@@ -41,7 +41,7 @@ tar --numeric-owner --preserve-permissions --same-owner --acls --selinux --xattr
 systemctl --root=$mnt disable tpm-udev.path
 
 # Slice rootfs config out of fstab, since LABEL=cloudimg-rootfs doesn't exist in the container environment and systemd-remount-fs.service complains about not being able to find it
-chroot $mnt /usr/bin/sed -i '/LABEL=cloudimg-rootfs/d' /etc/fstab
+chroot $mnt /bin/sed -i '/LABEL=cloudimg-rootfs/d' /etc/fstab
 
 # Networking setup is expected to not actually cross a network boundary (i.e. only talk to the container host), so decrease the timeout because all operations here should be fast
 mkdir $mnt/etc/systemd/system/systemd-networkd-wait-online.service.d/
