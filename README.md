@@ -14,9 +14,8 @@ The goal is to allow for the creation of developer environments that simulate ru
 
 ## Install
 
-<!-- TODO verify cause idrk how images are specified lol -->
-```bash
-$ docker pull ubuntu-server-dev
+```
+$ docker pull ghcr.io/seagl/ubuntu-server-dev:24.04
 ```
 
 ## Usage
